@@ -36,7 +36,7 @@ then
 	fi
 fi
 #token=`openssl rsautl -inkey gitkey -decrypt <gitenc`
-openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -iter 29 -pass pass:$salt
+openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt
 token=`cat /tmp/gitkey`
 WDIR=/var/tmp/clamscan
 mcuser=`last|egrep -i 'pts|tty1'|tail -1|awk '{print $1}'`
@@ -115,7 +115,7 @@ then
         apt -y install clamav
 fi
 #token=`openssl rsautl -inkey gitkey -decrypt <gitenc`
-openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -iter 29 -pass pass:$salt
+openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt
 token=`cat /tmp/gitkey`
 WDIR=/var/tmp/clamscan
 mcuser=`last|egrep -i 'pts|tty1'|tail -1|awk '{print $1}'`
