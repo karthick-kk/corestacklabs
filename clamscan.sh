@@ -116,6 +116,10 @@ then
 fi
 #token=`openssl rsautl -inkey gitkey -decrypt <gitenc`
 openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt
+if [ $? -ne 0 ]
+then
+	openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt -md md5
+fi
 token=`cat /tmp/gitkey`
 WDIR=/var/tmp/clamscan
 mcuser=`last|egrep -i 'pts|tty1'|tail -1|awk '{print $1}'`
