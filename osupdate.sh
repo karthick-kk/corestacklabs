@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-
+set -xe
 ## Function to scan Centos/Redhat
 rpmscan()
 {
@@ -37,10 +37,16 @@ then
 fi
 #token=`openssl rsautl -inkey gitkey -decrypt <gitenc`
 openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt
+if [ $? -ne 0 ]
+then
+	openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt -md md5
+fi
 token=`cat /tmp/gitkey`
 WDIR=/var/tmp/clamscan
-mcuser=`last|egrep -i 'pts|tty1'|tail -1|awk '{print $1}'`
+#mcuser=`last|egrep -i 'pts|tty1'|tail -1|awk '{print $1}'`
+mcuser=$(last|egrep -i ':0' | grep -v "reboot" | grep -v "wtmp" | tail -1 | awk 'NR==1 { print $1}')
 HDIR=`grep $mcuser /etc/passwd | cut -d ":" -f6`
+echo $HDIR
 if [ -d $WDIR ]
 then
         rm -rf $WDIR
@@ -110,14 +116,14 @@ then
         apt -y install net-tools
 fi
 #token=`openssl rsautl -inkey gitkey -decrypt <gitenc`
-openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt
+openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt -md md5 2>/dev/null
 if [ $? -ne 0 ]
 then
-	openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt -md md5
+	openssl enc -aes-256-cbc -d -in gitkey.enc -out /tmp/gitkey -pass pass:$salt
 fi
 token=`cat /tmp/gitkey`
 WDIR=/var/tmp/osscan
-mcuser=`last|egrep -i 'pts|tty1'|tail -1|awk '{print $1}'`
+mcuser=`last|egrep -i 'pts|tty1|:0'|grep -v reboot|grep -v wtmp|tail -1|awk '{print $1}'`
 HDIR=`grep $mcuser /etc/passwd | cut -d ":" -f6`
 if [ -d $WDIR ]
 then
